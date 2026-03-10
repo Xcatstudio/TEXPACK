@@ -22,15 +22,8 @@ jobs:
       with:
         arch: x64
     
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    
-    - name: Install Geode CLI
-      run: |
-        pip install geode-sdk
-      shell: pwsh
+    - name: Setup CMake
+      uses: lukka/get-cmake@latest
     
     - name: Download Geode SDK
       run: |
@@ -39,15 +32,19 @@ jobs:
         git checkout v4.0.0
       shell: bash
     
-    - name: Install Geode binaries
+    - name: Download Geode Binaries
       run: |
-        $env:GEODE_SDK = "${{ github.workspace }}\geode-sdk"
-        cd geode-sdk
-        geode sdk install-binaries
+        $GEODE_VERSION = "v4.0.0"
+        $BINARIES_URL = "https://github.com/geode-sdk/geode/releases/download/$GEODE_VERSION/geode-$GEODE_VERSION-win.zip"
+        
+        Write-Host "Downloading Geode binaries..."
+        Invoke-WebRequest -Uri $BINARIES_URL -OutFile "geode-binaries.zip"
+        
+        Write-Host "Extracting binaries..."
+        Expand-Archive -Path "geode-binaries.zip" -DestinationPath "geode-sdk/bin" -Force
+        
+        Write-Host "Binaries installed successfully"
       shell: pwsh
-    
-    - name: Setup CMake
-      uses: lukka/get-cmake@latest
     
     - name: Configure CMake
       run: |
