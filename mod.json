@@ -1,0 +1,29 @@
+{
+    "geode": "4.10.2",
+    "gd": {
+        "win": "2.206",
+        "android": "2.206"
+    },
+    "id": "com.textureloader.mod",
+    "name": "Texture Loader",
+    "version": "v1.0.0",
+    "developer": "TextureLoader Team",
+    "description": "Load custom textures into Geometry Dash",
+    "resources": {
+        "sprites": []
+    },
+    "settings": {
+        "enabled": {
+            "name": "Enable Texture Loader",
+            "description": "Enable or disable texture loading",
+            "type": "bool",
+            "default": true
+        },
+        "texture-folder": {
+            "name": "Texture Folder Path",
+            "description": "Path to custom textures folder",
+            "type": "string",
+            "default": "textures"
+        }
+    }
+}
