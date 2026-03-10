@@ -8,28 +8,44 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        config:
-        - name: Windows
-          os: windows-latest
-          
-    name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
-
-    steps:
-    - uses: actions/checkout@v4
+  build-windows:
+    runs-on: windows-latest
     
-    - name: Setup Geode SDK
-      uses: geode-sdk/cli@main
-      
-    - name: Build mod
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+    
+    - name: Download Geode SDK
       run: |
-        geode build
-        
-    - name: Upload artifacts
+        git clone https://github.com/geode-sdk/geode.git geode-sdk
+        cd geode-sdk
+        git checkout v4.0.0
+      shell: bash
+    
+    - name: Setup CMake
+      uses: lukka/get-cmake@latest
+    
+    - name: Configure CMake
+      run: |
+        $env:GEODE_SDK = "${{ github.workspace }}\geode-sdk"
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+      shell: pwsh
+    
+    - name: Build
+      run: |
+        $env:GEODE_SDK = "${{ github.workspace }}\geode-sdk"
+        cmake --build build --config Release
+      shell: pwsh
+    
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: texture-loader-${{ matrix.config.name }}
-        path: build/*.geode
+        name: TextureLoader-Windows
+        path: build/Release/*.geode
